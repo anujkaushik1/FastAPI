@@ -36,3 +36,14 @@ def addItems(body = Body()):      # schema file ke andr Item Class  => item ek c
     newId = len(fakeDatabase.keys()) + 1
     fakeDatabase[newId] = {'task' : body['task']} #Item.task
     return fakeDatabase
+
+
+@app.put("/{id}")   # yeh wali toh required field bnn jati hai
+def updateItem(id: int, item : schemas.Item):   # item body vala hai
+    fakeDatabase[id]['task'] = item.task
+    return fakeDatabase
+
+@app.delete("/{id}")
+def deleteItem(id : int):
+    fakeDatabase.pop(id)
+    return fakeDatabase

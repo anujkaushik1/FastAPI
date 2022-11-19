@@ -14,5 +14,11 @@ def getItems():
     return fakeDatabase
 
 @app.get("/{id}")
-def getSingleItem(id : int):
+def getSingleItem(id : int):       # id needs to be int only
     return fakeDatabase[id]
+
+@app.post("/")
+def addItems(task : str):        # we want task from body and needs to be string only
+    newId = len(fakeDatabase.keys()) + 1
+    fakeDatabase[newId] = {'task' : task}  # jo req se task aa rha hai usko fakedb mei daal rhe hai
+    return fakeDatabase

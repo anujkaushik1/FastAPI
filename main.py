@@ -27,12 +27,13 @@ fakeDatabase = {
 
 @app.get("/")
 def getItems(session : Session = Depends(get_session)): # gives access to the database
-    items = session.query(models.Item).all()
-    return items
+    itemObject = session.query(models.Item).all()
+    return itemObject
 
 @app.get("/{id}")
-def getSingleItem(id : int):       # id needs to be int only
-    return fakeDatabase[id]
+def getSingleItem(id : int, session : Session = Depends(get_session)):       # id needs to be int only
+    itemObject = session.query(models.Item).get(id)
+    return itemObject
 
 # @app.post("/")
 # def addItems(task : str):        # we want task from body and needs to be string only
@@ -43,11 +44,11 @@ def getSingleItem(id : int):       # id needs to be int only
 
 @app.post("/")
 def addItems(item : schemas.Item, session : Session = Depends(get_session)):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
-    item = models.Item(task = item.task)
-    session.add(item)
+    itemObject = models.Item(task = item.task)
+    session.add(itemObject)
     session.commit()    
-    session.refresh(item)
-    return item
+    session.refresh(itemObject)
+    return itemObject
 
 # @app.post("/")
 # def addItems(body = Body()):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
@@ -57,11 +58,16 @@ def addItems(item : schemas.Item, session : Session = Depends(get_session)):    
 
 
 @app.put("/{id}")   # yeh wali toh required field bnn jati hai
-def updateItem(id: int, item : schemas.Item):   # item body vala hai
-    fakeDatabase[id]['task'] = item.task
-    return fakeDatabase
+def updateItem(id: int, item : schemas.Item, session : Session = Depends(get_session)):   # item body vala hai
+    itemObject = session.query(models.Item).get(id)
+    itemObject.task = item.task
+    session.commit()
+    return itemObject
 
 @app.delete("/{id}")
-def deleteItem(id : int):
-    fakeDatabase.pop(id)
-    return fakeDatabase
+def deleteItem(id : int, session : Session = Depends(get_session)):
+    itemObject = session.query(models.Item).get(id)
+    session.delete(itemObject)
+    session.commit()
+    session.close()
+    return 'Item is deleted successfully'

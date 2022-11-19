@@ -41,17 +41,19 @@ def getSingleItem(id : int):       # id needs to be int only
 #     return fakeDatabase
 
 
-# @app.post("/")
-# def addItems(item : schemas.Item):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
-#     newId = len(fakeDatabase.keys()) + 1
-#     fakeDatabase[newId] = {'task' : item.task} #Item.task
-#     return fakeDatabase
-
 @app.post("/")
-def addItems(body = Body()):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
-    newId = len(fakeDatabase.keys()) + 1
-    fakeDatabase[newId] = {'task' : body['task']} #Item.task
-    return fakeDatabase
+def addItems(item : schemas.Item, session : Session = Depends(get_session)):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
+    item = models.Item(task = item.task)
+    session.add(item)
+    session.commit()    
+    session.refresh(item)
+    return item
+
+# @app.post("/")
+# def addItems(body = Body()):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
+#     newId = len(fakeDatabase.keys()) + 1
+#     fakeDatabase[newId] = {'task' : body['task']} #Item.task
+#     return fakeDatabase
 
 
 @app.put("/{id}")   # yeh wali toh required field bnn jati hai

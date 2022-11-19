@@ -1,5 +1,20 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Depends
 import schemas
+import models
+
+from database import Base, engine, SessionLocal
+from sqlalchemy.orm import Session
+
+Base.metadata.create_all(engine)  # create database
+
+#access the database
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+
+    finally:
+        session.close()
 
 app = FastAPI()
 
@@ -11,8 +26,9 @@ fakeDatabase = {
 }
 
 @app.get("/")
-def getItems():
-    return fakeDatabase
+def getItems(session : Session = Depends(get_session)): # gives access to the database
+    items = session.query(models.Item).all()
+    return items
 
 @app.get("/{id}")
 def getSingleItem(id : int):       # id needs to be int only

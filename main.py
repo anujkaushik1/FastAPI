@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 import schemas
 
 app = FastAPI()
@@ -25,8 +25,14 @@ def getSingleItem(id : int):       # id needs to be int only
 #     return fakeDatabase
 
 
+# @app.post("/")
+# def addItems(item : schemas.Item):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
+#     newId = len(fakeDatabase.keys()) + 1
+#     fakeDatabase[newId] = {'task' : item.task} #Item.task
+#     return fakeDatabase
+
 @app.post("/")
-def addItems(item : schemas.Item):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
+def addItems(body = Body()):      # schema file ke andr Item Class  => item ek class ka object bnn gya  
     newId = len(fakeDatabase.keys()) + 1
-    fakeDatabase[newId] = {'task' : item.task} #Item.task
+    fakeDatabase[newId] = {'task' : body['task']} #Item.task
     return fakeDatabase
